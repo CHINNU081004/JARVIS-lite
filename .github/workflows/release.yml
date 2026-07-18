@@ -116,6 +116,7 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           INPUT_TAG: ${{ github.event.inputs.tag }}
           INPUT_PRERELEASE: ${{ github.event.inputs.prerelease }}
         run: |
