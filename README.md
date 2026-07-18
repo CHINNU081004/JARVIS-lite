@@ -66,6 +66,16 @@ Run:
 ./build/jarvis-lite
 ```
 
+Install the command into your user PATH on Linux or macOS:
+
+```sh
+cmake --install build --prefix "$HOME/.local"
+export PATH="$HOME/.local/bin:$PATH"
+jarvis-lite --version
+```
+
+On Linux and macOS the command is lowercase: `jarvis-lite`. Running `JARVIS-lite` will fail on case-sensitive shells.
+
 Show hardware:
 
 ```sh
