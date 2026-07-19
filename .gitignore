@@ -1,5 +1,6 @@
 # Build outputs
 build/
+dist/
 out/
 cmake-build-*/
 
@@ -21,4 +22,3 @@ downloads/
 Thumbs.db
 *.swp
 *.swo
-

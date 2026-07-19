@@ -8,7 +8,7 @@
 namespace jarvis::config {
 
 struct Config {
-    std::string activeModel = "gemma-2b-it-q4";
+    std::string activeModel = "gemma-4-e2b-it-q4";
     std::filesystem::path downloadLocation;
     std::filesystem::path modelDirectory;
     unsigned int threadCount = 0;
@@ -38,4 +38,3 @@ std::string serializeConfig(const Config& config);
 Config parseConfig(const std::string& content, Config defaults = {});
 
 } // namespace jarvis::config
-

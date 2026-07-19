@@ -10,7 +10,7 @@ On Linux and macOS, `JARVIS-lite` is a different command and will fail with `com
 
 ## From GitHub Releases
 
-Download the package for your operating system from the GitHub Releases page.
+Download the package for your operating system from the GitHub Releases page. Current packaging focus is Linux and Windows.
 
 ### Linux
 
@@ -25,17 +25,6 @@ The installer copies the binary to `$HOME/.local/bin` by default. If that direct
 ```sh
 export PATH="$HOME/.local/bin:$PATH"
 ```
-
-### macOS
-
-Open `jarvis-lite-macos.dmg`, then run the included installer from Terminal:
-
-```sh
-./install.sh
-jarvis-lite --version
-```
-
-If macOS blocks the downloaded binary, allow it in System Settings > Privacy & Security.
 
 ### Windows
 
@@ -74,7 +63,6 @@ Models are downloaded after installation. They are not bundled with the executab
 Default model storage locations:
 
 - Linux: `$XDG_DATA_HOME/jarvis-lite/models` or `~/.local/share/jarvis-lite/models`
-- macOS: `~/Library/Application Support/JARVIS Lite/models`
 - Windows: `%LOCALAPPDATA%\\JARVIS Lite\\models`
 
-Model URLs and checksums must be configured by the distribution before public model downloads are enabled.
+Use `/models available`, `/models download <id>`, or `/models download-url <id> <direct-gguf-url>` inside the app. See [MODELS.md](MODELS.md) for model IDs and Hugging Face token notes.

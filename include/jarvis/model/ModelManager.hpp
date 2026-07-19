@@ -43,11 +43,16 @@ public:
 
     bool isInstalled(const std::string& modelId) const;
     std::filesystem::path modelPath(const ModelInfo& model) const;
+    std::filesystem::path modelPathForId(const std::string& modelId) const;
 
     bool selectModel(const std::string& modelId, std::string& message);
     bool removeModel(const std::string& modelId, std::string& message);
     bool verifyModel(const std::string& modelId, std::string& message) const;
     bool downloadModel(const std::string& modelId, std::string& message, ProgressCallback progress = {});
+    bool downloadCustomModel(const std::string& modelId,
+                             const std::string& url,
+                             std::string& message,
+                             ProgressCallback progress = {});
 
 private:
     config::Config& config_;

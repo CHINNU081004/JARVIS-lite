@@ -36,9 +36,6 @@ jobs:
           - name: Windows x64
             os: windows-latest
             asset: jarvis-lite-windows-x64.exe
-          - name: macOS
-            os: macos-latest
-            asset: jarvis-lite-macos.dmg
 
     steps:
       - name: Check out source
@@ -64,23 +61,6 @@ jobs:
           cp scripts/install-unix.sh dist/root/install.sh
           chmod +x dist/root/bin/jarvis-lite dist/root/install.sh
           tar -C dist/root -czf "dist/${{ matrix.asset }}" .
-
-      - name: Package macOS
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          set -euo pipefail
-          binary_path="$(find build -type f -perm -111 -name jarvis-lite | head -n 1)"
-          if [[ -z "${binary_path}" ]]; then
-            echo "jarvis-lite binary was not found" >&2
-            exit 1
-          fi
-          mkdir -p dist/root
-          cp "${binary_path}" dist/root/jarvis-lite
-          cp README.md LICENSE dist/root/
-          cp scripts/install-unix.sh dist/root/install.sh
-          chmod +x dist/root/jarvis-lite dist/root/install.sh
-          hdiutil create -volname "JARVIS Lite" -srcfolder dist/root -ov -format UDZO "dist/${{ matrix.asset }}"
 
       - name: Package Windows
         if: runner.os == 'Windows'
@@ -136,7 +116,6 @@ jobs:
 
           - Linux: \`jarvis-lite-linux-x64.tar.gz\`
           - Windows: \`jarvis-lite-windows-x64.exe\`
-          - macOS: \`jarvis-lite-macos.dmg\`
 
           JARVIS Lite is a terminal application. Run \`jarvis-lite\` from a terminal after installing it into a directory on your PATH.
           EOF

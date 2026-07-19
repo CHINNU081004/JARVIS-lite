@@ -6,6 +6,7 @@
 #include "jarvis/logging/Logger.hpp"
 #include "jarvis/model/ModelManager.hpp"
 #include "jarvis/platform/SystemInfo.hpp"
+#include "jarvis/voice/VoiceEngine.hpp"
 
 #include <iosfwd>
 #include <vector>
@@ -19,6 +20,7 @@ public:
                 model::ModelManager& modelManager,
                 inference::InferenceEngine& inferenceEngine,
                 agent::FileAgent& fileAgent,
+                voice::VoiceEngine& voiceEngine,
                 platform::SystemInfo system,
                 std::istream& input,
                 std::ostream& output);
@@ -33,6 +35,7 @@ private:
     void printConfig() const;
     void printHistory() const;
     void handleModels(const std::vector<std::string>& parts);
+    void handleVoice(const std::string& line, const std::vector<std::string>& parts);
     void handleAgent(const std::string& line, const std::vector<std::string>& parts);
     void handleRun(const std::string& line);
     void chat(const std::string& prompt);
@@ -42,6 +45,7 @@ private:
     model::ModelManager& modelManager_;
     inference::InferenceEngine& inferenceEngine_;
     agent::FileAgent& fileAgent_;
+    voice::VoiceEngine& voiceEngine_;
     platform::SystemInfo system_;
     std::istream& input_;
     std::ostream& output_;
@@ -50,4 +54,3 @@ private:
 };
 
 } // namespace jarvis::cli
-

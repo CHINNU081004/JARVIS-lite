@@ -9,7 +9,11 @@ namespace jarvis::model {
 
 enum class ModelCategory {
     GeneralAssistant,
-    Coding
+    Coding,
+    Multimodal,
+    SpeechToText,
+    TextToSpeech,
+    Custom
 };
 
 struct ModelInfo {
@@ -35,4 +39,3 @@ public:
 };
 
 } // namespace jarvis::model
-

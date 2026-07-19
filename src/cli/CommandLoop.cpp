@@ -26,6 +26,7 @@ CommandLoop::CommandLoop(config::ConfigManager& configManager,
                          model::ModelManager& modelManager,
                          inference::InferenceEngine& inferenceEngine,
                          agent::FileAgent& fileAgent,
+                         voice::VoiceEngine& voiceEngine,
                          platform::SystemInfo system,
                          std::istream& input,
                          std::ostream& output)
@@ -34,6 +35,7 @@ CommandLoop::CommandLoop(config::ConfigManager& configManager,
       modelManager_(modelManager),
       inferenceEngine_(inferenceEngine),
       fileAgent_(fileAgent),
+      voiceEngine_(voiceEngine),
       system_(std::move(system)),
       input_(input),
       output_(output) {}
@@ -103,6 +105,10 @@ bool CommandLoop::handleCommand(const std::string& line) {
         handleModels(parts);
         return true;
     }
+    if (command == "/voice") {
+        handleVoice(line, parts);
+        return true;
+    }
     if (command == "/agent") {
         handleAgent(line, parts);
         return true;
@@ -129,9 +135,13 @@ void CommandLoop::printHelp() const {
         << "  /models installed             List installed models\n"
         << "  /models recommend             Recommend a model for this machine\n"
         << "  /models download <id>         Download or resume a model download\n"
+        << "  /models download-url <id> <url> Download any direct GGUF model URL\n"
         << "  /models verify <id>           Verify an installed model\n"
         << "  /models select <id>           Select active model\n"
         << "  /models remove <id>           Remove installed model\n"
+        << "  /voice status                 Show STT/TTS runtime status\n"
+        << "  /voice stt <audio-file>       Transcribe an audio file when an STT runtime is linked\n"
+        << "  /voice tts <text>             Speak text when a TTS runtime is linked\n"
         << "  /agent ls [path]              List a directory\n"
         << "  /agent read <path>            Read a file\n"
         << "  /agent write <path> <text>    Write text to a file\n"
@@ -184,7 +194,8 @@ void CommandLoop::handleModels(const std::vector<std::string>& parts) {
             output_ << item.model.id << " | " << item.model.name
                     << " | " << model::toString(item.model.category)
                     << " | size " << platform::formatBytes(item.model.sizeBytes)
-                    << " | RAM " << platform::formatBytes(item.model.recommendedRamBytes);
+                    << " | RAM " << platform::formatBytes(item.model.recommendedRamBytes)
+                    << " | " << item.model.description;
             if (!item.availableForHardware) {
                 output_ << " | unavailable: " << item.reason;
             }
@@ -222,6 +233,28 @@ void CommandLoop::handleModels(const std::vector<std::string>& parts) {
         return;
     }
 
+    if (action == "download-url") {
+        if (parts.size() < 4) {
+            output_ << "Usage: /models download-url <id> <direct-gguf-url>\n";
+            return;
+        }
+        const auto modelId = parts[2];
+        const auto url = parts[3];
+        std::string message;
+        const bool ok = modelManager_.downloadCustomModel(modelId, url, message, [&](std::uint64_t downloaded, std::uint64_t total) {
+            if (total == 0) {
+                return;
+            }
+            const auto percent = static_cast<int>((downloaded * 100ULL) / total);
+            output_ << "\rDownloading: " << percent << '%' << std::flush;
+            if (downloaded >= total) {
+                output_ << '\n';
+            }
+        });
+        output_ << (ok ? "OK: " : "Error: ") << message << '\n';
+        return;
+    }
+
     if (parts.size() < 3) {
         output_ << "Model command requires a model id. Type /help.\n";
         return;
@@ -256,6 +289,43 @@ void CommandLoop::handleModels(const std::vector<std::string>& parts) {
     }
 
     output_ << (ok ? "OK: " : "Error: ") << message << '\n';
+}
+
+void CommandLoop::handleVoice(const std::string& line, const std::vector<std::string>& parts) {
+    if (parts.size() < 2) {
+        output_ << "Voice command requires an action. Type /help.\n";
+        return;
+    }
+
+    const auto action = util::toLower(parts[1]);
+    if (action == "status") {
+        const auto status = voiceEngine_.status();
+        output_ << "Speech-to-text: " << (status.speechToTextAvailable ? "available" : "unavailable")
+                << " | " << status.speechToTextBackend << '\n'
+                << "Text-to-speech: " << (status.textToSpeechAvailable ? "available" : "unavailable")
+                << " | " << status.textToSpeechBackend << '\n';
+        return;
+    }
+
+    if (action == "stt" && parts.size() >= 3) {
+        std::string transcript;
+        const auto result = voiceEngine_.transcribe(parts[2], transcript);
+        if (!result.success) {
+            output_ << "Error: " << result.message << '\n';
+            return;
+        }
+        output_ << transcript << '\n';
+        return;
+    }
+
+    if (action == "tts") {
+        const auto text = commandPayload(line, "/voice tts");
+        const auto result = voiceEngine_.speak(text);
+        output_ << (result.success ? "OK: " : "Error: ") << result.message << '\n';
+        return;
+    }
+
+    output_ << "Invalid voice command. Type /help.\n";
 }
 
 void CommandLoop::handleAgent(const std::string& line, const std::vector<std::string>& parts) {

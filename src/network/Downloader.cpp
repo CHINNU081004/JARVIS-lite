@@ -1,6 +1,7 @@
 #include "jarvis/network/Downloader.hpp"
 
 #include <cstdio>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <system_error>
@@ -105,6 +106,14 @@ DownloadResult DefaultDownloader::download(const DownloadRequest& request) {
     curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &context);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "jarvis-lite/1.0");
 
+    struct curl_slist* headers = nullptr;
+    const char* huggingFaceToken = std::getenv("HF_TOKEN");
+    if (huggingFaceToken != nullptr && *huggingFaceToken != '\0') {
+        const std::string authorization = std::string("Authorization: Bearer ") + huggingFaceToken;
+        headers = curl_slist_append(headers, authorization.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+    }
+
     if (context.existingBytes > 0) {
         curl_easy_setopt(curl, CURLOPT_RESUME_FROM_LARGE, context.existingBytes);
     }
@@ -113,6 +122,9 @@ DownloadResult DefaultDownloader::download(const DownloadRequest& request) {
     long responseCode = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &responseCode);
     curl_easy_cleanup(curl);
+    if (headers != nullptr) {
+        curl_slist_free_all(headers);
+    }
     context.output.close();
 
     const auto finalSize = std::filesystem::exists(request.outputPath) ? std::filesystem::file_size(request.outputPath) : 0;
@@ -120,6 +132,10 @@ DownloadResult DefaultDownloader::download(const DownloadRequest& request) {
         return {false, std::string("Download failed: ") + curl_easy_strerror(code), finalSize};
     }
     if (responseCode >= 400) {
+        if (responseCode == 401 || responseCode == 403) {
+            return {false, "Download failed with HTTP status " + std::to_string(responseCode)
+                + ". If this is a gated Hugging Face model, accept the model terms and set HF_TOKEN.", finalSize};
+        }
         return {false, "Download failed with HTTP status " + std::to_string(responseCode), finalSize};
     }
     return {true, "Download complete", finalSize};
@@ -130,4 +146,3 @@ DownloadResult DefaultDownloader::download(const DownloadRequest& request) {
 }
 
 } // namespace jarvis::network
-

@@ -39,6 +39,7 @@ set(JARVIS_PUBLIC_HEADERS
     include/jarvis/platform/SystemInfo.hpp
     include/jarvis/util/Sha256.hpp
     include/jarvis/util/String.hpp
+    include/jarvis/voice/VoiceEngine.hpp
 )
 
 set(JARVIS_SOURCES
@@ -54,6 +55,7 @@ set(JARVIS_SOURCES
     src/platform/SystemInfo.cpp
     src/util/Sha256.cpp
     src/util/String.cpp
+    src/voice/VoiceEngine.cpp
 )
 
 add_library(jarvis_core STATIC ${JARVIS_PUBLIC_HEADERS} ${JARVIS_SOURCES})
@@ -79,4 +81,3 @@ if(JARVIS_BUILD_TESTS)
     target_link_libraries(jarvis_tests PRIVATE jarvis_core)
     add_test(NAME jarvis_tests COMMAND jarvis_tests)
 endif()
-

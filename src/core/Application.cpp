@@ -8,6 +8,7 @@
 #include "jarvis/logging/Logger.hpp"
 #include "jarvis/model/ModelManager.hpp"
 #include "jarvis/platform/SystemInfo.hpp"
+#include "jarvis/voice/VoiceEngine.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -52,6 +53,7 @@ int Application::run(const std::vector<std::string>& arguments) {
         model::ModelManager modelManager(configManager.config(), logger);
         inference::LocalInferenceEngine inferenceEngine(modelManager);
         agent::FileAgent fileAgent;
+        voice::VoiceEngine voiceEngine;
 
         if (arguments.size() > 1) {
             const auto& arg = arguments[1];
@@ -78,7 +80,7 @@ int Application::run(const std::vector<std::string>& arguments) {
             return 2;
         }
 
-        cli::CommandLoop loop(configManager, logger, modelManager, inferenceEngine, fileAgent, system, std::cin, std::cout);
+        cli::CommandLoop loop(configManager, logger, modelManager, inferenceEngine, fileAgent, voiceEngine, system, std::cin, std::cout);
         return loop.run();
     } catch (const std::exception& error) {
         std::cerr << "Fatal error: " << error.what() << '\n';

@@ -24,7 +24,7 @@ void testSha256() {
 
 void testConfigRoundTrip() {
     jarvis::config::Config config;
-    config.activeModel = "qwen-coder-1.5b-q4";
+    config.activeModel = "gemma-4-e2b-it-q4";
     config.downloadLocation = "/tmp/jarvis-downloads";
     config.modelDirectory = "/tmp/jarvis-models";
     config.threadCount = 4;
@@ -92,4 +92,3 @@ int main() {
     std::cout << "All tests passed\n";
     return 0;
 }
-
