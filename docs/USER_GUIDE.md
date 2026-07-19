@@ -8,6 +8,12 @@ jarvis-lite
 
 Type `/help` to see commands.
 
+Start the basic menu UI:
+
+```sh
+jarvis-lite --ui
+```
+
 ## Chat
 
 Enter normal text at the prompt. Responses stream through the inference interface.
@@ -66,7 +72,7 @@ Download any direct GGUF URL:
 
 If `/models download ...` fails with an HTTP error, open the model page on Hugging Face in your browser, accept any required terms, set `HF_TOKEN`, then try again.
 
-Linux/macOS examples:
+Linux example:
 
 ```sh
 jarvis-lite
@@ -118,7 +124,25 @@ Text-to-speech command:
 /voice tts hello from JARVIS Lite
 ```
 
-The STT/TTS modules are present, but this build does not link Whisper, Piper, or another speech runtime yet.
+Voice conversation from an audio file:
+
+```text
+/voice chat speech.wav
+```
+
+Configure speech-to-text with a command that prints the transcript to stdout. Use `{audio}` where the audio file path should be inserted:
+
+```sh
+export JARVIS_STT_COMMAND="whisper-cli -m /path/to/ggml-base.en.bin -f {audio} --no-timestamps"
+```
+
+Configure text-to-speech with a command that speaks text. Use `{text}` where the response text should be inserted:
+
+```sh
+export JARVIS_TTS_COMMAND="piper --model /path/to/voice.onnx --output-raw <<< {text} | aplay -r 22050 -f S16_LE -t raw -"
+```
+
+If no `JARVIS_TTS_COMMAND` is set, JARVIS Lite tries common system speech commands such as `espeak-ng`, `espeak`, or `spd-say` when available.
 
 ## Local Agent Tools
 

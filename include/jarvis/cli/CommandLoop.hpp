@@ -38,7 +38,7 @@ private:
     void handleVoice(const std::string& line, const std::vector<std::string>& parts);
     void handleAgent(const std::string& line, const std::vector<std::string>& parts);
     void handleRun(const std::string& line);
-    void chat(const std::string& prompt);
+    std::string chat(const std::string& prompt, bool speakResponse = false);
 
     config::ConfigManager& configManager_;
     logging::Logger& logger_;

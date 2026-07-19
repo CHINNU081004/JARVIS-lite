@@ -142,6 +142,7 @@ void CommandLoop::printHelp() const {
         << "  /voice status                 Show STT/TTS runtime status\n"
         << "  /voice stt <audio-file>       Transcribe an audio file when an STT runtime is linked\n"
         << "  /voice tts <text>             Speak text when a TTS runtime is linked\n"
+        << "  /voice chat <audio-file>      Transcribe, answer, and speak when voice backends are configured\n"
         << "  /agent ls [path]              List a directory\n"
         << "  /agent read <path>            Read a file\n"
         << "  /agent write <path> <text>    Write text to a file\n"
@@ -325,6 +326,20 @@ void CommandLoop::handleVoice(const std::string& line, const std::vector<std::st
         return;
     }
 
+    if (action == "chat" && parts.size() >= 3) {
+        std::string transcript;
+        const auto result = voiceEngine_.transcribe(parts[2], transcript);
+        if (!result.success) {
+            output_ << "Error: " << result.message << '\n';
+            return;
+        }
+
+        output_ << "user voice> " << transcript << '\n';
+        const auto response = chat(transcript, true);
+        (void)response;
+        return;
+    }
+
     output_ << "Invalid voice command. Type /help.\n";
 }
 
@@ -408,7 +423,7 @@ void CommandLoop::handleRun(const std::string& line) {
     output_ << (result.success ? "OK: " : "Error: ") << result.message << '\n';
 }
 
-void CommandLoop::chat(const std::string& prompt) {
+std::string CommandLoop::chat(const std::string& prompt, bool speakResponse) {
     history_.push_back({"user", prompt});
     output_ << "assistant> " << std::flush;
 
@@ -417,7 +432,15 @@ void CommandLoop::chat(const std::string& prompt) {
         output_ << token << std::flush;
         response << token;
     });
-    history_.push_back({"assistant", util::trim(response.str())});
+    auto finalResponse = util::trim(response.str());
+    history_.push_back({"assistant", finalResponse});
+    if (speakResponse) {
+        const auto result = voiceEngine_.speak(finalResponse);
+        if (!result.success) {
+            output_ << "Voice output unavailable: " << result.message << '\n';
+        }
+    }
+    return finalResponse;
 }
 
 } // namespace jarvis::cli

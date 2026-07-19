@@ -6,7 +6,7 @@ JARVIS Lite is a terminal application. The command name is lowercase:
 jarvis-lite
 ```
 
-On Linux and macOS, `JARVIS-lite` is a different command and will fail with `command not found`.
+On Linux, `JARVIS-lite` is a different command and will fail with `command not found`.
 
 ## From GitHub Releases
 
@@ -48,6 +48,12 @@ The installed command is:
 
 ```sh
 jarvis-lite
+```
+
+The basic menu UI starts with:
+
+```sh
+jarvis-lite --ui
 ```
 
 If `jarvis-lite` still says `command not found`, add the install directory to PATH:

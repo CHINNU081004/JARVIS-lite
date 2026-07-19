@@ -72,12 +72,13 @@ $env:HF_TOKEN = "hf_your_token_here"
 
 ## Voice Models
 
-The app has STT/TTS module boundaries and CLI commands now:
+The app has STT/TTS commands and can call external speech tools:
 
 ```text
 /voice status
 /voice stt speech.wav
 /voice tts hello
+/voice chat speech.wav
 ```
 
-The current build does not link Whisper, Piper, or another speech runtime yet, so these commands report module status instead of producing audio/transcripts.
+Set `JARVIS_STT_COMMAND` for transcription and `JARVIS_TTS_COMMAND` for speech output. The placeholders `{audio}` and `{text}` are replaced safely with the audio path or response text.

@@ -31,6 +31,7 @@ This repository intentionally avoids Electron, Chromium, WebView, Node.js, and P
 - Configuration for active model, model directory, download location, thread count, context length, and log level.
 - Basic local agent capabilities for files, folders, and confirmed shell command execution.
 - Voice command surface for speech-to-text and text-to-speech runtime integration.
+- Basic native menu UI mode with `jarvis-lite --ui`.
 
 ## Supported Platforms
 
@@ -97,7 +98,13 @@ Run:
 ./build/jarvis-lite
 ```
 
-Install the command into your user PATH on Linux or macOS:
+Open the basic menu UI:
+
+```sh
+./build/jarvis-lite --ui
+```
+
+Install the command into your user PATH on Linux:
 
 ```sh
 cmake --install build --prefix "$HOME/.local"
@@ -105,7 +112,7 @@ export PATH="$HOME/.local/bin:$PATH"
 jarvis-lite --version
 ```
 
-On Linux and macOS the command is lowercase: `jarvis-lite`. Running `JARVIS-lite` will fail on case-sensitive shells.
+On Linux the command is lowercase: `jarvis-lite`. Running `JARVIS-lite` will fail on case-sensitive shells.
 
 Show hardware:
 
@@ -148,6 +155,7 @@ Useful commands:
 /voice status
 /voice stt speech.wav
 /voice tts hello
+/voice chat speech.wav
 /agent ls .
 /agent read README.md
 /run cmake --version
@@ -160,7 +168,7 @@ Terminal commands require explicit confirmation.
 
 ## Current Inference Status
 
-Version 1.0 defines the inference, model, and voice boundaries, but this scaffold does not bundle or link a GGUF, STT, or TTS runtime. A production release should connect `LocalInferenceEngine` to the chosen local inference backend and `VoiceEngine` to Whisper/Piper-style backends while keeping the CLI and core architecture unchanged.
+Version 1.0 defines the inference, model, and voice boundaries, but this scaffold does not bundle a GGUF runtime. Voice can call external STT/TTS commands through environment variables. A production release should connect `LocalInferenceEngine` to the chosen local inference backend while keeping the CLI, UI, and core architecture unchanged.
 
 ## Roadmap
 

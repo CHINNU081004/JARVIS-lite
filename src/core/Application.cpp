@@ -8,6 +8,7 @@
 #include "jarvis/logging/Logger.hpp"
 #include "jarvis/model/ModelManager.hpp"
 #include "jarvis/platform/SystemInfo.hpp"
+#include "jarvis/ui/ConsoleUi.hpp"
 #include "jarvis/voice/VoiceEngine.hpp"
 
 #include <iostream>
@@ -18,7 +19,7 @@ namespace {
 
 void printUsage(std::ostream& output) {
     output << AppName << " " << AppVersion << '\n'
-           << "Usage: jarvis-lite [--help] [--version] [--hardware] [--models]\n"
+           << "Usage: jarvis-lite [--help] [--version] [--hardware] [--models] [--ui]\n"
            << "Run without arguments to start the interactive CLI.\n";
 }
 
@@ -75,6 +76,10 @@ int Application::run(const std::vector<std::string>& arguments) {
                     std::cout << '\n';
                 }
                 return 0;
+            }
+            if (arg == "--ui") {
+                ui::ConsoleUi consoleUi(configManager, modelManager, inferenceEngine, voiceEngine, system, std::cin, std::cout);
+                return consoleUi.run();
             }
             printUsage(std::cerr);
             return 2;

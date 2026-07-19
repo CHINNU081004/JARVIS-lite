@@ -39,6 +39,7 @@ set(JARVIS_PUBLIC_HEADERS
     include/jarvis/platform/SystemInfo.hpp
     include/jarvis/util/Sha256.hpp
     include/jarvis/util/String.hpp
+    include/jarvis/ui/ConsoleUi.hpp
     include/jarvis/voice/VoiceEngine.hpp
 )
 
@@ -55,6 +56,7 @@ set(JARVIS_SOURCES
     src/platform/SystemInfo.cpp
     src/util/Sha256.cpp
     src/util/String.cpp
+    src/ui/ConsoleUi.cpp
     src/voice/VoiceEngine.cpp
 )
 

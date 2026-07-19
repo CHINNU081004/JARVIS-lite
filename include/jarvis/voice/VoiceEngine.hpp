@@ -8,8 +8,8 @@ namespace jarvis::voice {
 struct VoiceStatus {
     bool speechToTextAvailable = false;
     bool textToSpeechAvailable = false;
-    std::string speechToTextBackend = "not linked";
-    std::string textToSpeechBackend = "not linked";
+    std::string speechToTextBackend;
+    std::string textToSpeechBackend;
 };
 
 struct VoiceResult {
